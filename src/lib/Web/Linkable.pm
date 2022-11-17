@@ -16,42 +16,42 @@ hook before_template_render => sub {
 };
 
 sub tag {
-    my ( $class, $tag, \%attrs ) = @_;
-    return if !$tag || !%attrs;
-    return sprintf "<%s %s>", $tag, $asset->stringify_attrs(%attrs);
+    my ( $class, $tag, $attrs ) = @_;
+    return if !$tag || !%$attrs;
+    return sprintf "<%s %s>", $tag, $asset->stringify_attrs(%$attrs);
 }
 
 sub img {
-    my ( $class, $url, \%attrs ) = @_;
+    my ( $class, $url, $attrs ) = @_;
     return if !$url;
-    $attrs{src} = $url;
-    $class->tag( img => \%attrs );
+    $attrs->{src} = $url;
+    $class->tag( img => $attrs );
 }
 
 sub a {
-    my ( $class, $url, \%attrs ) = @_;
+    my ( $class, $url, $attrs ) = @_;
     return if !$url;
-    $attrs{href} = $url;
-    $class->tag( a => \%attrs );
+    $attrs->{href} = $url;
+    $class->tag( a => $attrs );
 }
 
 sub source {
-    my ( $class, $url, \%attrs ) = @_;
+    my ( $class, $url, $attrs ) = @_;
     return if !$url;
-    $attrs{srcset} = $url;
-    $attrs{media}  = "(max-width: $attrs->{size}px)" if $attrs->{size};
-    $class->tag( source => \%attrs );
+    $attrs->{srcset} = $url;
+    $attrs->{media}  = "(max-width: $attrs->{size}px)" if $attrs->{size};
+    $class->tag( source => $attrs );
 }
 
 sub picture {
-    my ( $class, $url, \%attrs ) = @_;
+    my ( $class, $url, $attrs ) = @_;
     my @parts = ('<picture>');
 
     while ( my ( $n, $u ) = each $attrs->{size}->%* ) {
         push @parts, $class->source( $u, { size => $n } );
     }
 
-    push @parts, $class->source($url), $class->img( $url, alt => $attrs{alt} );
+    push @parts, $class->source($url), $class->img( $url, alt => $attrs->{alt} );
 
     return join "\n", @parts, '</picture>';
 }
