@@ -10,8 +10,9 @@ my $token   = RefreshURL->new( name => 'web' );
 
 hook before_template_render => sub {
     my ($stash) = @_;
-    $stash->{refresh} = \&_refresh;
-    $stash->{alink}   = \&_alink;
+    $stash->{refresh}   = \&_refresh;
+    $stash->{alink}     = \&_alink;
+    $stash->{page_link} = \&_page;
 };
 
 sub _refresh {
@@ -40,6 +41,18 @@ sub _alink {
     $alink .= qq{ class="current-page"} if $match->{$current_page};
 
     return $alink . ">$display</a>";
+}
+
+sub _page {
+    my ( $page, $suffix ) = @_;
+
+    $suffix //= 'html';
+
+    my $url     = $content->get("page.$page.link.url")     // "/$page.$suffix";
+    my $display = $content->get("page.$page.link.display") // "\u$page";
+
+    return qq{<a href="$url">$display</a>};
+
 }
 
 1;
