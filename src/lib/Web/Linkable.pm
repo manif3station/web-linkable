@@ -28,7 +28,11 @@ sub _refresh {
 sub _proxy_image {
     my $page = shift;
     my ( $attrs, $args ) = attrs shift;
-    sprintf '<img src=%s%s>', _refresh("/fp/$page"), $attrs;
+    $page =~s/\./\//g;
+    my $link = "/fp/$page";
+    return $args->{link}
+        ? _refresh( $link, { noqq => 1 } )
+        : sprintf '<img src=%s%s>', _refresh($link), $attrs;
 }
 
 1;
